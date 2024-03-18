@@ -1,0 +1,29 @@
+{
+  "name": "my-js-service",
+  "version": "1.0.0",
+  "description": "js service for testing enforcers",
+  "main": "index.js",
+  "scripts": {
+    "prezip": "npm run bundle",
+    "zip": "./run-package.sh",
+    "bundle": "./node_modules/.bin/rollup -c"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@fastify/express": "^2.3.0",
+    "@humansecurity/aws-lambda-edge-enforcer": "^4.1.0",
+    "fastify": "^4.26.2"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.25",
+    "@rollup/plugin-commonjs": "^24.0.1",
+    "@rollup/plugin-node-resolve": "^15.0.1",
+    "@rollup/plugin-typescript": "^11.0.0",
+    "@rollup/plugin-json": "^4.1.0",
+    "typescript": "^4.9.4",
+    "@typescript-eslint/eslint-plugin": "^5.40.0",
+    "@typescript-eslint/parser": "^5.40.0",
+    "rollup": "^2.56.3"
+  }
+}

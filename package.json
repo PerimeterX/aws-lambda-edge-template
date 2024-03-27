@@ -1,29 +1,29 @@
 {
-  "name": "my-js-service",
+  "type": "module",
+  "name": "aws-lambda-edge-eonfircer-template",
   "version": "1.0.0",
   "description": "js service for testing enforcers",
   "main": "index.js",
   "scripts": {
-    "prezip": "npm run bundle",
+    "clean": "rm -rf dist",
+    "build": "esbuild --platform=node --format=cjs --target=es2022 --outdir=dist src/*.ts src/custom/*.ts && npm run build:library",
+    "build:library": "esbuild --platform=node --format=cjs --target=es2022 --outdir=dist/px/ --bundle src/px/humansecurity.ts",
     "zip": "./run-package.sh",
-    "bundle": "./node_modules/.bin/rollup -c"
+    "prebuild": "npm run clean",
+    "prezip": "npm run build"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@fastify/express": "^2.3.0",
-    "@humansecurity/aws-lambda-edge-enforcer": "^4.1.0",
-    "fastify": "^4.26.2"
+    "@humansecurity/aws-lambda-edge-enforcer": "^4.1.0"
   },
   "devDependencies": {
     "@types/node": "^20.11.25",
-    "@rollup/plugin-commonjs": "^24.0.1",
-    "@rollup/plugin-node-resolve": "^15.0.1",
-    "@rollup/plugin-typescript": "^11.0.0",
-    "@rollup/plugin-json": "^4.1.0",
     "typescript": "^4.9.4",
-    "@typescript-eslint/eslint-plugin": "^5.40.0",
-    "@typescript-eslint/parser": "^5.40.0",
-    "rollup": "^2.56.3"
+    "esbuild": "^0.20.0",
+    "@types/aws-lambda": "^8.10.130",
+    "@types/multer": "^1.4.11",
+    "aws-lambda": "^1.0.7",
+    "ts-node": "^10.9.2"
   }
 }

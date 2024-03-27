@@ -29,4 +29,4 @@ export async function handler(
     //TODO custom logic here after passed our enforcer and didn't get blocked
 
     return request;
-};
+}

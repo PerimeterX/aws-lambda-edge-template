@@ -132,6 +132,6 @@ const config: HumanSecurityConfiguration = {
 };
 
 export async function getConfigAsync(){
-    //here you can use  async/await syntax for blocking requests
+    //Here you can use  async/await syntax for blocking requests and assign them to your HumanSecurityConfiguration
     return config;
 }

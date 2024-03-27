@@ -1,7 +1,6 @@
 import { CloudFrontRequest, CloudFrontRequestEvent, CloudFrontResponseResult, Context } from 'aws-lambda';
-import { createHumanFirstPartyHandler } from '@humansecurity/aws-lambda-edge-enforcer';
+import { createHumanFirstPartyHandler } from './px/humansecurity';
 import { getConfigAsync } from './custom/config';
-import {HumanSecurityEnforcer} from "./px/humansecurity";
 
 
 // define a handler

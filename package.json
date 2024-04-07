@@ -12,18 +12,17 @@
     "prebuild": "npm run clean",
     "prezip": "npm run build"
   },
-  "author": "",
   "license": "ISC",
   "dependencies": {
-    "@humansecurity/aws-lambda-edge-enforcer": "^4.1.0"
+    "@humansecurity/aws-lambda-edge-enforcer": "^4.2.0"
   },
   "devDependencies": {
-    "@types/node": "^20.11.25",
-    "typescript": "^4.9.4",
-    "esbuild": "^0.20.0",
     "@types/aws-lambda": "^8.10.130",
     "@types/multer": "^1.4.11",
+    "@types/node": "^20.11.25",
     "aws-lambda": "^1.0.7",
-    "ts-node": "^10.9.2"
+    "esbuild": "^0.20.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^4.9.4"
   }
 }

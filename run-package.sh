@@ -22,5 +22,4 @@ do
 done
 
 # cleanup
-rm -rf $build_dir/custom
-rm -rf $build_dir/px/templates
+rm -rf $build_dir

@@ -2,6 +2,14 @@
 
 See the full official documentation for the Human Security AWS Lambda@Edge Enforcer [here](https://docs.perimeterx.com/docs/installation-azure).
 
+## Use case
+1. This repo allows you to generate templates for each Human Security AWS Lambda@Edge Enforcer lambda [Version 4](https://edocs.humansecurity.com/docs/installation-aws-lambda-edge) (and above).
+2. The lambdas are customized and allow you to:
+   - Edit the enforcer configuration in a separate file.
+   - Use async calls to fetch specific configuration values.
+   - Add your custom logic to the enforcer request/response when the handler starts and before the handler finishes, and then send it to the next handler you define.
+
+## How to use
 1. git clone the project into your working directory.
 2. Install dependencies with `npm install`.
 3. Configure the enforcer by modifying the `src/custom/config.ts` file. 
@@ -13,7 +21,7 @@ See the full official documentation for the Human Security AWS Lambda@Edge Enfor
    * <b>All other</b> configuration fields that you can read more about them [here](https://edocs.humansecurity.com/docs/configuration-aws-lambda-edge):
       *  The simple ones under `Simple function configuration` comment.
       * Custom functions that can be found under `Custom function configurations` comment.
-4. Compile the enforcer by running `npm run zip`.
+4. Compile the enforcer by running `npm run zip` from the project directory.
 5. Choose the relevant lambda from the 3 generated lambda zip files:
     * PXEnforcer.zip
     * PXActivities.zip

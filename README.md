@@ -1,6 +1,6 @@
-# aws-lambda-edge-template
+# AWS Lambda@Edge Enforcer Sample Project
 
-See the full official documentation for the Human Security AWS Lambda@Edge Enforcer [here](https://docs.perimeterx.com/docs/installation-azure).
+See the full official documentation for the Human Security AWS Lambda@Edge Enforcer [here](https://edocs.humansecurity.com/docs/installation-aws-lambda-edge).
 
 ## Use case
 1. This repo allows you to generate templates for each Human Security AWS Lambda@Edge Enforcer lambda [Version 4](https://edocs.humansecurity.com/docs/installation-aws-lambda-edge) (and above).
@@ -12,9 +12,9 @@ See the full official documentation for the Human Security AWS Lambda@Edge Enfor
 ## How to use
 1. git clone the project into your working directory.
 2. Install dependencies with `npm install`.
-3. Configure the enforcer by modifying the `src/custom/config.ts` file. 
-   </br> Under this file you can find 3 types of configuration paremeters: 
-   * <b>manadorty</b> configuration fields that can be found under `Mandatory configurations` comment:   
+3. Configure the enforcer by modifying the `src/custom/config.ts` file.
+   </br> Under this file you can find 3 types of configuration parameters:
+   * <b>Mandatory</b> configuration fields that can be found under `Mandatory configurations` comment:   
       * `PX_APP_ID` - The application ID (available in the [portal](https://console.perimeterx.com/))
       * `PX_AUTH_TOKEN` - The server token (available in the [portal](https://console.perimeterx.com/))
       * `PX_COOKIE_SECRET` - The cookie secret associated with the Bot Defender security policy (available in the [portal](https://console.perimeterx.com/))

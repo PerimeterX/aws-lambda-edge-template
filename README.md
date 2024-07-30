@@ -4,10 +4,14 @@ See the full official documentation for the Human Security AWS Lambda@Edge Enfor
 
 ## Use case
 1. This repo allows you to generate templates for each Human Security AWS Lambda@Edge Enforcer lambda [Version 4](https://edocs.humansecurity.com/docs/installation-aws-lambda-edge) (and above).
-2. The lambdas are customized and allow you to:
+2. All lambdas are customized and allow you to:
    - Edit the enforcer configuration in a separate file.
    - Use async calls to fetch specific configuration values.
    - Add your custom logic to the enforcer request/response when the handler starts and before the handler finishes, and then send it to the next handler you define.
+3. The PXCombined_Enforcer_FirstParty lambda allows you to combine two lambdas (FirstParty and Enforcer lambda) in one handler function. 
+   This isn't the recommended way of using our enforcer lambdas and should be used carefully after consulting with our Solution Architects to understand the impact of this 
+   implementation.
+    
 
 ## How to use
 1. git clone the project into your working directory.
@@ -22,7 +26,8 @@ See the full official documentation for the Human Security AWS Lambda@Edge Enfor
       *  The simple ones under `Simple function configuration` comment.
       * Custom functions that can be found under `Custom function configurations` comment.
 4. Compile the enforcer by running `npm run zip` from the project directory.
-5. Choose the relevant lambda from the 3 generated lambda zip files:
+5. Choose the relevant lambda from the 4 generated lambda zip files:
     * PXEnforcer.zip
     * PXActivities.zip
     * PXFirstParty.zip
+    * PXCombined_Enforcer_FirstParty.zip

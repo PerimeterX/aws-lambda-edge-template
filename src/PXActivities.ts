@@ -1,12 +1,11 @@
-import { CloudFrontResponseEvent, CloudFrontRequestEvent, CloudFrontResponseResult, Context, CloudFrontResponseHandler } from 'aws-lambda';
-import { createHumanActivitiesHandler } from './px/humansecurity';
+import { CloudFrontResponseEvent, CloudFrontResponseResult, Context, CloudFrontResponseHandler } from 'aws-lambda';
+import { HumanSecurityPostEnforcer } from './px/humansecurity';
 import { getConfigAsync } from './custom/config';
 
 
 // define a handler
 
-let activitiesHandler: (event:CloudFrontResponseEvent, context: Context)=>
-    Promise<CloudFrontResponseResult>;
+let activitiesHandler: HumanSecurityPostEnforcer
 export async function handler(
     event: CloudFrontResponseEvent,
     context: Context
@@ -14,8 +13,14 @@ export async function handler(
 
     if (!activitiesHandler){
         const config = await getConfigAsync();
-        activitiesHandler = createHumanActivitiesHandler(config); //(event: CloudFrontResponseEvent, context: Context) => Promise<CloudFrontResponseResult>;
+        activitiesHandler = HumanSecurityPostEnforcer.initialize(config); //(event: CloudFrontResponseEvent, context: Context) => Promise<CloudFrontResponseResult>;
     }
+    const request = event.Records[0].cf.request
+    const response = event.Records[0].cf.response
 
-    return activitiesHandler(event,context);
+    // call and await the postEnforce() function
+    await activitiesHandler.postEnforce(request,response);
+
+    // return the response
+    return response;
 }

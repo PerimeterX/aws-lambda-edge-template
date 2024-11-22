@@ -3,7 +3,7 @@ set -e
 
 # variable declarations
 build_dir=dist
-lambdas=( PXEnforcer PXFirstParty PXActivities )
+lambdas=( PXEnforcer PXFirstParty PXActivities PXCombined_Enforcer_FirstParty)
 
 # clear previous zips
 rm -f *.zip

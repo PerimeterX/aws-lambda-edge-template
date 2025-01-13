@@ -26,3 +26,63 @@ See the full official documentation for the Human Security AWS Lambda@Edge Enfor
     * PXEnforcer.zip
     * PXActivities.zip
     * PXFirstParty.zip
+
+## Deploy using AWS CloudFormation
+
+### prerequisites:
+1. AWS CLI installed and configured.
+2. AWS S3 bucket to store the lambda zip files.
+
+### Steps:
+1. Store the lambda zip files in the S3 bucket using the following command:
+    ```bash
+    aws s3 cp PXEnforcer.zip s3://<bucket-name>/PXEnforcer.zip
+    aws s3 cp PXActivities.zip s3://<bucket-name>/PXActivities.zip
+    aws s3 cp PXFirstParty.zip s3://<bucket-name>/PXFirstParty.zip
+    ```
+2. Navigate to the `deploy` directory.
+    ```bash
+   cd deploy
+    ```
+3. Edit the `cfm_deploy.yaml` file and replace the placeholders with the relevant values:
+ - `DomainName: "<ORIGIN_DOMAIN_URL>" ` 
+```yaml
+     CloudFrontDistribution:
+    Type: "AWS::CloudFront::Distribution"
+    Properties:
+      DistributionConfig:
+        Enabled: true
+        Origins:
+          - DomainName: "<ORIGIN_DOMAIN_URL>"
+            Id: "ExampleOrigin"
+            CustomOriginConfig:
+              HTTPPort: 80
+              HTTPSPort: 443
+              OriginProtocolPolicy: "https-only"
+   ```
+ - First Party configuration - PathPattern: `"<PX_APP_ID_SUFFIX>/*"`
+```yaml
+        CacheBehaviors:
+          - PathPattern: "<PX_APP_ID_SUFFIX>/*"
+            AllowedMethods:
+                - "GET"
+                - "HEAD"
+                - "OPTIONS"
+                - "PUT"
+                - "POST"
+                - "PATCH"
+                - "DELETE"
+```
+4. Deploy the CloudFormation stack using the following command (<b>NOTE: replace the placeholders with the relevant values</b>):
+    ```bash
+    aws cloudformation deploy \                                    
+    --stack-name <stack-name> \
+    --template-file cfm_deploy.yaml \
+    --capabilities CAPABILITY_IAM \
+    --parameter-overrides \
+    HumanLambdaCodeBucket=<bucket-name> \
+    EnforcerLambdaCodePath=PXEnforcer.zip \
+    ActivitiesLambdaCodePath=PXActivities.zip \
+    FirstPartyLambdaCodePath=PXFirstParty.zip
+    ```
+5. After the stack is created, you can find the CloudFront distribution URL in the CloudFormation stack outputs (or in the AWS UI).

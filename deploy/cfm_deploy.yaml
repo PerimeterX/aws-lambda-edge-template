@@ -1,0 +1,153 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Resources:
+  PXEnforcerLambda:
+    Type: "AWS::Lambda::Function"
+    Properties:
+      FunctionName: "human-security-enforcer-lambda"
+      Handler: "index.handler"
+      Role: !GetAtt EnforcerExecutionRole.Arn
+      Runtime: "nodejs20.x"
+      Code:
+        S3Bucket: !Ref HumanLambdaCodeBucket
+        S3Key: !Ref EnforcerLambdaCodePath
+
+  PXEnforcerLambdaFunctionVersion:
+    Type: "AWS::Lambda::Version"
+    Properties:
+      FunctionName: !Ref PXEnforcerLambda
+
+  EnforcerExecutionRole:
+    Type: "AWS::IAM::Role"
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: "Allow"
+            Principal:
+              Service:
+                - "lambda.amazonaws.com"
+                - "edgelambda.amazonaws.com"
+            Action: "sts:AssumeRole"
+      Policies:
+        - PolicyName: "human-security-enforcer-policy"
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: "Allow"
+                Action:
+                  - "logs:CreateLogGroup"
+                  - "logs:CreateLogStream"
+                  - "logs:PutLogEvents"
+                Resource: "*"
+
+  PXActivitiesLambda:
+    Type: "AWS::Lambda::Function"
+    Properties:
+      FunctionName: "human-security-activities-lambda"
+      Handler: "index.handler"
+      Role: !GetAtt EnforcerExecutionRole.Arn
+      Runtime: "nodejs20.x"
+      Code:
+        S3Bucket: !Ref HumanLambdaCodeBucket
+        S3Key: !Ref ActivitiesLambdaCodePath
+
+  PXActivitiesLambdaFunctionVersion:
+    Type: "AWS::Lambda::Version"
+    Properties:
+      FunctionName: !Ref PXActivitiesLambda
+
+  PXFirstPartyLambda:
+    Type: "AWS::Lambda::Function"
+    Properties:
+      FunctionName: "human-security-first-party-lambda"
+      Handler: "index.handler"
+      Role: !GetAtt EnforcerExecutionRole.Arn
+      Runtime: "nodejs20.x"
+      Code:
+        S3Bucket: !Ref HumanLambdaCodeBucket
+        S3Key: !Ref FirstPartyLambdaCodePath
+
+  PXFirstPartyLambdaFunctionVersion:
+    Type: "AWS::Lambda::Version"
+    Properties:
+      FunctionName: !Ref PXFirstPartyLambda
+
+  CloudFrontDistribution:
+    Type: "AWS::CloudFront::Distribution"
+    Properties:
+      DistributionConfig:
+        Enabled: true
+        Origins:
+          - DomainName: "<ORIGIN_DOMAIN_URL>"
+            Id: "ExampleOrigin"
+            CustomOriginConfig:
+              HTTPPort: 80
+              HTTPSPort: 443
+              OriginProtocolPolicy: "https-only"
+        DefaultCacheBehavior:
+            AllowedMethods:
+                - "GET"
+                - "HEAD"
+                - "OPTIONS"
+                - "PUT"
+                - "POST"
+                - "PATCH"
+                - "DELETE"
+            CachedMethods:
+                - "GET"
+                - "HEAD"
+                - "OPTIONS"
+            TargetOriginId: "ExampleOrigin"
+            ForwardedValues:
+                QueryString: true
+                Cookies:
+                    Forward: "all"
+            ViewerProtocolPolicy: "allow-all"
+            LambdaFunctionAssociations:
+              - EventType: "viewer-request"
+                LambdaFunctionARN: !Ref PXEnforcerLambdaFunctionVersion
+              - EventType: "origin-response"
+                LambdaFunctionARN: !Ref PXActivitiesLambdaFunctionVersion
+        CacheBehaviors:
+          - PathPattern: "<PX_APP_ID_SUFFIX>/*"
+            AllowedMethods:
+                - "GET"
+                - "HEAD"
+                - "OPTIONS"
+                - "PUT"
+                - "POST"
+                - "PATCH"
+                - "DELETE"
+            CachedMethods:
+                - "GET"
+                - "HEAD"
+            TargetOriginId: "ExampleOrigin"
+            ForwardedValues:
+                QueryString: true
+                Headers:
+                    - "Origin"
+                Cookies:
+                    Forward: "all"
+            ViewerProtocolPolicy: "allow-all"
+            LambdaFunctionAssociations:
+              - EventType: "origin-request"
+                LambdaFunctionARN: !Ref PXFirstPartyLambdaFunctionVersion
+        ViewerCertificate:
+          CloudFrontDefaultCertificate: true
+
+Parameters:
+  HumanLambdaCodeBucket:
+    Type: String
+    Description: "S3 bucket where the Enforcer Lambdas code zip files are stored."
+
+  EnforcerLambdaCodePath:
+    Type: String
+    Description: "S3 path for the Enforcer Lambda code zip file."
+
+  ActivitiesLambdaCodePath:
+    Type: String
+    Description: "S3 path for the Activities Lambda code zip file."
+
+  FirstPartyLambdaCodePath:
+    Type: String
+    Description: "S3 path for the First Party Lambda code zip file."

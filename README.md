@@ -23,9 +23,9 @@ See the full official documentation for the Human Security AWS Lambda@Edge Enfor
       * Custom functions that can be found under `Custom function configurations` comment.
 4. Compile the enforcer by running `npm run zip` from the project directory.
 5. Choose the relevant lambda from the 3 generated lambda zip files:
-    * PXEnforcer.zip
-    * PXActivities.zip
-    * PXFirstParty.zip
+    * HumanEnforcer.zip
+    * HumanActivities.zip
+    * HumanFirstParty.zip
 
 ## Deploy using AWS CloudFormation
 
@@ -36,9 +36,9 @@ See the full official documentation for the Human Security AWS Lambda@Edge Enfor
 ### Steps:
 1. Store the lambda zip files in the S3 bucket using the following command:
     ```bash
-    aws s3 cp PXEnforcer.zip s3://<bucket-name>/PXEnforcer.zip
-    aws s3 cp PXActivities.zip s3://<bucket-name>/PXActivities.zip
-    aws s3 cp PXFirstParty.zip s3://<bucket-name>/PXFirstParty.zip
+    aws s3 cp HumanEnforcer.zip s3://<bucket-name>/HumanEnforcer.zip
+    aws s3 cp HumanActivities.zip s3://<bucket-name>/HumanActivities.zip
+    aws s3 cp HumanirstParty.zip s3://<bucket-name>/HumanFirstParty.zip
     ```
 2. Navigate to the `deploy` directory.
     ```bash
@@ -81,8 +81,8 @@ See the full official documentation for the Human Security AWS Lambda@Edge Enfor
     --capabilities CAPABILITY_IAM \
     --parameter-overrides \
     HumanLambdaCodeBucket=<bucket-name> \
-    EnforcerLambdaCodePath=PXEnforcer.zip \
-    ActivitiesLambdaCodePath=PXActivities.zip \
-    FirstPartyLambdaCodePath=PXFirstParty.zip
+    EnforcerLambdaCodePath=HumanEnforcer.zip \
+    ActivitiesLambdaCodePath=HumanActivities.zip \
+    FirstPartyLambdaCodePath=HumanFirstParty.zip
     ```
 5. After the stack is created, you can find the CloudFront distribution URL in the CloudFormation stack outputs (or in the AWS UI).

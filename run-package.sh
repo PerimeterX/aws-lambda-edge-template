@@ -3,7 +3,8 @@ set -e
 
 # variable declarations
 build_dir=dist
-lambdas=( PXEnforcer PXFirstParty PXActivities )
+lambdas=( HumanEnforcer HumanFirstParty HumanActivities )
+
 
 # clear previous zips
 rm -f *.zip

@@ -1,6 +1,6 @@
 AWSTemplateFormatVersion: "2010-09-09"
 Resources:
-  PXEnforcerLambda:
+  HumanEnforcerLambda:
     Type: "AWS::Lambda::Function"
     Properties:
       FunctionName: "human-security-enforcer-lambda"
@@ -11,10 +11,10 @@ Resources:
         S3Bucket: !Ref HumanLambdaCodeBucket
         S3Key: !Ref EnforcerLambdaCodePath
 
-  PXEnforcerLambdaFunctionVersion:
+  HumanEnforcerLambdaFunctionVersion:
     Type: "AWS::Lambda::Version"
     Properties:
-      FunctionName: !Ref PXEnforcerLambda
+      FunctionName: !Ref HumanEnforcerLambda
 
   EnforcerExecutionRole:
     Type: "AWS::IAM::Role"
@@ -40,7 +40,7 @@ Resources:
                   - "logs:PutLogEvents"
                 Resource: "*"
 
-  PXActivitiesLambda:
+  HumanActivitiesLambda:
     Type: "AWS::Lambda::Function"
     Properties:
       FunctionName: "human-security-activities-lambda"
@@ -51,12 +51,12 @@ Resources:
         S3Bucket: !Ref HumanLambdaCodeBucket
         S3Key: !Ref ActivitiesLambdaCodePath
 
-  PXActivitiesLambdaFunctionVersion:
+  HumanActivitiesLambdaFunctionVersion:
     Type: "AWS::Lambda::Version"
     Properties:
-      FunctionName: !Ref PXActivitiesLambda
+      FunctionName: !Ref HumanActivitiesLambda
 
-  PXFirstPartyLambda:
+  HumanFirstPartyLambda:
     Type: "AWS::Lambda::Function"
     Properties:
       FunctionName: "human-security-first-party-lambda"
@@ -67,10 +67,10 @@ Resources:
         S3Bucket: !Ref HumanLambdaCodeBucket
         S3Key: !Ref FirstPartyLambdaCodePath
 
-  PXFirstPartyLambdaFunctionVersion:
+  HumanFirstPartyLambdaFunctionVersion:
     Type: "AWS::Lambda::Version"
     Properties:
-      FunctionName: !Ref PXFirstPartyLambda
+      FunctionName: !Ref HumanFirstPartyLambda
 
   CloudFrontDistribution:
     Type: "AWS::CloudFront::Distribution"
@@ -98,16 +98,17 @@ Resources:
                 - "HEAD"
                 - "OPTIONS"
             TargetOriginId: "ExampleOrigin"
-            ForwardedValues:
-                QueryString: true
-                Cookies:
-                    Forward: "all"
+            OriginRequestPolicyConfig:
+              CookiesConfig:
+                CookiesBehavior: "all"
+              QueryStringsConfig:
+                QueryStringsBehavior: "all"
             ViewerProtocolPolicy: "allow-all"
             LambdaFunctionAssociations:
               - EventType: "viewer-request"
-                LambdaFunctionARN: !Ref PXEnforcerLambdaFunctionVersion
+                LambdaFunctionARN: !Ref HumanEnforcerLambdaFunctionVersion
               - EventType: "origin-response"
-                LambdaFunctionARN: !Ref PXActivitiesLambdaFunctionVersion
+                LambdaFunctionARN: !Ref HumanActivitiesLambdaFunctionVersion
         CacheBehaviors:
           - PathPattern: "<PX_APP_ID_SUFFIX>/*"
             AllowedMethods:
@@ -122,16 +123,19 @@ Resources:
                 - "GET"
                 - "HEAD"
             TargetOriginId: "ExampleOrigin"
-            ForwardedValues:
-                QueryString: true
+            OriginRequestPolicyConfig:
+              CookiesConfig:
+                CookiesBehavior: "all"
+              HeadersConfig:
+                HeadersBehavior: "whitelist"
                 Headers:
-                    - "Origin"
-                Cookies:
-                    Forward: "all"
+                  - "Origin"
+              QueryStringsConfig:
+                QueryStringsBehavior: "all"
             ViewerProtocolPolicy: "allow-all"
             LambdaFunctionAssociations:
               - EventType: "origin-request"
-                LambdaFunctionARN: !Ref PXFirstPartyLambdaFunctionVersion
+                LambdaFunctionARN: !Ref HumanFirstPartyLambdaFunctionVersion
         ViewerCertificate:
           CloudFrontDefaultCertificate: true
 

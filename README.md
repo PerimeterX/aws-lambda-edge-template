@@ -38,7 +38,7 @@ See the full official documentation for the Human Security AWS Lambda@Edge Enfor
     ```bash
     aws s3 cp HumanEnforcer.zip s3://<bucket-name>/HumanEnforcer.zip
     aws s3 cp HumanActivities.zip s3://<bucket-name>/HumanActivities.zip
-    aws s3 cp HumanirstParty.zip s3://<bucket-name>/HumanFirstParty.zip
+    aws s3 cp HumanFirstParty.zip s3://<bucket-name>/HumanFirstParty.zip
     ```
 2. Navigate to the `deploy` directory.
     ```bash

@@ -102,7 +102,7 @@ Resources:
       DistributionConfig:
         Enabled: true
         Origins:
-          - DomainName: "www.example.com"
+          - DomainName: "<ORIGIN_DOMAIN_URL>"
             Id: "ExampleOrigin"
             CustomOriginConfig:
               HTTPPort: 80
@@ -131,7 +131,7 @@ Resources:
               - EventType: "origin-response"
                 LambdaFunctionARN: !Ref HumanActivitiesLambdaFunctionVersion
         CacheBehaviors:
-          - PathPattern: "1233455/*"
+          - PathPattern: "<PX_APP_ID_SUFFIX>/*"
             AllowedMethods:
                 - "GET"
                 - "HEAD"

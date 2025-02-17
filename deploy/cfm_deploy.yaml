@@ -1,5 +1,29 @@
 AWSTemplateFormatVersion: "2010-09-09"
 Resources:
+  EnforcerOriginRequestPolicy:
+    Type: AWS::CloudFront::OriginRequestPolicy
+    Properties:
+      OriginRequestPolicyConfig:
+        Name: "human-security-enforcer-origin-request-policy"
+        QueryStringsConfig:
+          QueryStringBehavior: "all"
+        CookiesConfig:
+          CookieBehavior: "all"
+        HeadersConfig:
+          HeaderBehavior: allViewer
+  FirstPartyOriginRequestPolicy:
+    Type: AWS::CloudFront::OriginRequestPolicy
+    Properties:
+      OriginRequestPolicyConfig:
+        Name: "human-security-first-party-origin-request-policy"
+        CookiesConfig:
+          CookieBehavior: "all"
+        HeadersConfig:
+          HeaderBehavior: "whitelist"
+          Headers:
+            - "Origin"
+        QueryStringsConfig:
+          QueryStringBehavior: "all"
   HumanEnforcerLambda:
     Type: "AWS::Lambda::Function"
     Properties:
@@ -78,7 +102,7 @@ Resources:
       DistributionConfig:
         Enabled: true
         Origins:
-          - DomainName: "<ORIGIN_DOMAIN_URL>"
+          - DomainName: "www.example.com"
             Id: "ExampleOrigin"
             CustomOriginConfig:
               HTTPPort: 80
@@ -98,11 +122,8 @@ Resources:
                 - "HEAD"
                 - "OPTIONS"
             TargetOriginId: "ExampleOrigin"
-            OriginRequestPolicyConfig:
-              CookiesConfig:
-                CookiesBehavior: "all"
-              QueryStringsConfig:
-                QueryStringsBehavior: "all"
+            OriginRequestPolicyId: !Ref EnforcerOriginRequestPolicy
+            CachePolicyId: "658327ea-f89d-4fab-a63d-7e88639e58f6"  # AWS Managed CachingOptimized Policy
             ViewerProtocolPolicy: "allow-all"
             LambdaFunctionAssociations:
               - EventType: "viewer-request"
@@ -110,7 +131,7 @@ Resources:
               - EventType: "origin-response"
                 LambdaFunctionARN: !Ref HumanActivitiesLambdaFunctionVersion
         CacheBehaviors:
-          - PathPattern: "<PX_APP_ID_SUFFIX>/*"
+          - PathPattern: "1233455/*"
             AllowedMethods:
                 - "GET"
                 - "HEAD"
@@ -123,15 +144,8 @@ Resources:
                 - "GET"
                 - "HEAD"
             TargetOriginId: "ExampleOrigin"
-            OriginRequestPolicyConfig:
-              CookiesConfig:
-                CookiesBehavior: "all"
-              HeadersConfig:
-                HeadersBehavior: "whitelist"
-                Headers:
-                  - "Origin"
-              QueryStringsConfig:
-                QueryStringsBehavior: "all"
+            OriginRequestPolicyId: !Ref FirstPartyOriginRequestPolicy
+            CachePolicyId: "658327ea-f89d-4fab-a63d-7e88639e58f6"  # AWS Managed CachingOptimized Policy
             ViewerProtocolPolicy: "allow-all"
             LambdaFunctionAssociations:
               - EventType: "origin-request"

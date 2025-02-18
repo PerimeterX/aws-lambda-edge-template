@@ -26,12 +26,14 @@ See the full official documentation for the Human Security AWS Lambda@Edge Enfor
     * HumanEnforcer.zip
     * HumanActivities.zip
     * HumanFirstParty.zip
+6. Deploy the lambda to AWS Lambda@Edge using the AWS console, AWS CLI or Cloudformation using the instructions below.
 
 ## Deploy using AWS CloudFormation
 
 ### prerequisites:
-1. AWS CLI installed and configured.
-2. AWS S3 bucket to store the lambda zip files.
+1. Complete the instructions in the `How to use` section and make sure you have the lambda zip files.
+2. AWS CLI installed and configured.
+3. AWS S3 bucket to store the lambda zip files.
 
 ### Steps:
 1. Store the lambda zip files in the S3 bucket using the following command:
@@ -72,6 +74,23 @@ See the full official documentation for the Human Security AWS Lambda@Edge Enfor
                 - "POST"
                 - "PATCH"
                 - "DELETE"
+```
+* Example: for PX_APP_ID: `pxapp12345` the `PX_APP_ID_SUFFIX` is `app12345` (Remove the PX prefix from the app_id)
+```yaml
+        CacheBehaviors:
+          - PathPattern: "pxapp12345/*"
+            AllowedMethods:
+                - "GET"
+                - "HEAD"
+                - "OPTIONS"
+                - "PUT"
+                - "POST"
+                - "PATCH"
+                - "DELETE"
+```
+ - `HumanLambdaCodeBucket: "<bucket-name>"` 
+```yaml
+    HumanLambdaCodeBucket: "<bucket-name>"
 ```
 4. Deploy the CloudFormation stack using the following command (<b>NOTE: replace the placeholders with the relevant values</b>):
     ```bash

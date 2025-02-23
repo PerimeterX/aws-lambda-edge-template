@@ -1,9 +1,9 @@
 # AWS Lambda@Edge Enforcer Sample Project
 
-See the full official documentation for the Human Security AWS Lambda@Edge Enforcer [here](https://edocs.humansecurity.com/docs/installation-aws-lambda-edge).
+See the full official documentation for the Human Security AWS Lambda@Edge Enforcer [here](https://docs.humansecurity.com/applications-and-accounts/docs/whats-new-aws-lambda-edge).
 
 ## Use case
-1. This repo allows you to generate templates for each Human Security AWS Lambda@Edge Enforcer lambda [Version 4](https://edocs.humansecurity.com/docs/installation-aws-lambda-edge) (and above).
+1. This repo allows you to generate templates for each Human Security AWS Lambda@Edge Enforcer lambda [Version 4](https://docs.humansecurity.com/applications-and-accounts/docs/whats-new-aws-lambda-edge) (and above).
 2. The lambdas are customized and allow you to:
    - Edit the enforcer configuration in a separate file.
    - Use async calls to fetch specific configuration values.
@@ -18,7 +18,7 @@ See the full official documentation for the Human Security AWS Lambda@Edge Enfor
       * `PX_APP_ID` - The application ID (available in the [portal](https://console.perimeterx.com/))
       * `PX_AUTH_TOKEN` - The server token (available in the [portal](https://console.perimeterx.com/))
       * `PX_COOKIE_SECRET` - The cookie secret associated with the Bot Defender security policy (available in the [portal](https://console.perimeterx.com/))
-   * <b>All other</b> configuration fields that you can read more about them [here](https://edocs.humansecurity.com/docs/configuration-aws-lambda-edge):
+   * <b>All other</b> configuration fields that you can read more about them [here](https://docs.humansecurity.com/applications-and-accounts/docs/configuration-aws-lambda-edge):
       *  The simple ones under `Simple function configuration` comment.
       * Custom functions that can be found under `Custom function configurations` comment.
 4. Compile the enforcer by running `npm run zip` from the project directory.

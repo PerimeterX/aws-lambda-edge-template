@@ -1,0 +1,170 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Resources:
+  HumanEnforcerCachePolicy:
+    Type: "AWS::CloudFront::CachePolicy"
+    Properties:
+      CachePolicyConfig:
+        Name: "human-security-enforcer-cache-policy"
+        DefaultTTL: 5
+        MaxTTL: 10
+        MinTTL: 0
+        ParametersInCacheKeyAndForwardedToOrigin:
+          CookiesConfig:
+            CookieBehavior: "whitelist"
+            Cookies:
+              - "*__px*"
+              - "px**"
+          HeadersConfig:
+            HeaderBehavior: "whitelist"
+            Headers:
+              - "Host"
+              - "User-Agent"
+          QueryStringsConfig:
+            QueryStringBehavior: "all"
+          EnableAcceptEncodingGzip: true
+          EnableAcceptEncodingBrotli: true
+  HumanEnforcerLambda:
+    Type: "AWS::Lambda::Function"
+    Properties:
+      FunctionName: "human-security-enforcer-lambda"
+      Handler: "index.handler"
+      Role: !GetAtt EnforcerExecutionRole.Arn
+      Runtime: "nodejs20.x"
+      Code:
+        S3Bucket: !Ref HumanLambdaCodeBucket
+        S3Key: !Ref EnforcerLambdaCodePath
+
+  HumanEnforcerLambdaFunctionVersion:
+    Type: "AWS::Lambda::Version"
+    Properties:
+      FunctionName: !Ref HumanEnforcerLambda
+
+  EnforcerExecutionRole:
+    Type: "AWS::IAM::Role"
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: "Allow"
+            Principal:
+              Service:
+                - "lambda.amazonaws.com"
+                - "edgelambda.amazonaws.com"
+            Action: "sts:AssumeRole"
+      Policies:
+        - PolicyName: "human-security-enforcer-policy"
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: "Allow"
+                Action:
+                  - "logs:CreateLogGroup"
+                  - "logs:CreateLogStream"
+                  - "logs:PutLogEvents"
+                Resource: "*"
+
+  HumanActivitiesLambda:
+    Type: "AWS::Lambda::Function"
+    Properties:
+      FunctionName: "human-security-activities-lambda"
+      Handler: "index.handler"
+      Role: !GetAtt EnforcerExecutionRole.Arn
+      Runtime: "nodejs20.x"
+      Code:
+        S3Bucket: !Ref HumanLambdaCodeBucket
+        S3Key: !Ref ActivitiesLambdaCodePath
+
+  HumanActivitiesLambdaFunctionVersion:
+    Type: "AWS::Lambda::Version"
+    Properties:
+      FunctionName: !Ref HumanActivitiesLambda
+
+  HumanFirstPartyLambda:
+    Type: "AWS::Lambda::Function"
+    Properties:
+      FunctionName: "human-security-first-party-lambda"
+      Handler: "index.handler"
+      Role: !GetAtt EnforcerExecutionRole.Arn
+      Runtime: "nodejs20.x"
+      Code:
+        S3Bucket: !Ref HumanLambdaCodeBucket
+        S3Key: !Ref FirstPartyLambdaCodePath
+
+  HumanFirstPartyLambdaFunctionVersion:
+    Type: "AWS::Lambda::Version"
+    Properties:
+      FunctionName: !Ref HumanFirstPartyLambda
+
+  CloudFrontDistribution:
+    Type: "AWS::CloudFront::Distribution"
+    Properties:
+      DistributionConfig:
+        Enabled: true
+        Origins:
+          - DomainName: "<ORIGIN_DOMAIN_URL>"
+            Id: "ExampleOrigin"
+            CustomOriginConfig:
+              HTTPPort: 80
+              HTTPSPort: 443
+              OriginProtocolPolicy: "https-only"
+        DefaultCacheBehavior:
+            AllowedMethods:
+                - "GET"
+                - "HEAD"
+                - "OPTIONS"
+                - "PUT"
+                - "POST"
+                - "PATCH"
+                - "DELETE"
+            CachedMethods:
+                - "GET"
+                - "HEAD"
+                - "OPTIONS"
+            TargetOriginId: "ExampleOrigin"
+            OriginRequestPolicyId: "b689b0a8-53d0-40ab-baf2-68738e2966ac"
+            CachePolicyId: "658327ea-f89d-4fab-a63d-7e88639e58f6"  # AWS Managed CachingOptimized Policy
+            ViewerProtocolPolicy: "allow-all"
+            LambdaFunctionAssociations:
+              - EventType: "viewer-request"
+                LambdaFunctionARN: !Ref HumanEnforcerLambdaFunctionVersion
+              - EventType: "origin-response"
+                LambdaFunctionARN: !Ref HumanActivitiesLambdaFunctionVersion
+        CacheBehaviors:
+          - PathPattern: "<PX_APP_ID_SUFFIX>/*"
+            AllowedMethods:
+                - "GET"
+                - "HEAD"
+                - "OPTIONS"
+                - "PUT"
+                - "POST"
+                - "PATCH"
+                - "DELETE"
+            CachedMethods:
+                - "GET"
+                - "HEAD"
+            TargetOriginId: "ExampleOrigin"
+            OriginRequestPolicyId: "b689b0a8-53d0-40ab-baf2-68738e2966ac"
+            CachePolicyId: !Ref HumanEnforcerCachePolicy
+            ViewerProtocolPolicy: "allow-all"
+            LambdaFunctionAssociations:
+              - EventType: "origin-request"
+                LambdaFunctionARN: !Ref HumanFirstPartyLambdaFunctionVersion
+        ViewerCertificate:
+          CloudFrontDefaultCertificate: true
+
+Parameters:
+  HumanLambdaCodeBucket:
+    Type: String
+    Description: "S3 bucket where the Enforcer Lambdas code zip files are stored."
+
+  EnforcerLambdaCodePath:
+    Type: String
+    Description: "S3 path for the Enforcer Lambda code zip file."
+
+  ActivitiesLambdaCodePath:
+    Type: String
+    Description: "S3 path for the Activities Lambda code zip file."
+
+  FirstPartyLambdaCodePath:
+    Type: String
+    Description: "S3 path for the First Party Lambda code zip file."

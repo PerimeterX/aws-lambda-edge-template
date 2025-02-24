@@ -47,7 +47,8 @@ See the full official documentation for the Human Security AWS Lambda@Edge Enfor
    cd deploy
     ```
 3. Edit the `cfm_deploy.yaml` file and replace the placeholders with the relevant values:
- - `DomainName: "<ORIGIN_DOMAIN_URL>" ` 
+ - `DomainName: "<ORIGIN_DOMAIN_URL>" `
+ - <b>Example:</b> `- DomainName: "example.com"`
 ```yaml
      CloudFrontDistribution:
     Type: "AWS::CloudFront::Distribution"
@@ -62,7 +63,8 @@ See the full official documentation for the Human Security AWS Lambda@Edge Enfor
               HTTPSPort: 443
               OriginProtocolPolicy: "https-only"
    ```
- - First Party configuration - PathPattern: `"<PX_APP_ID_SUFFIX>/*"`
+ - PathPattern: `"<PX_APP_ID_SUFFIX>/*"`
+ - <b>Example</b>: for PX_APP_ID: `pxapp12345` the `PX_APP_ID_SUFFIX` is `app12345` (Remove the PX prefix from the app_id)
 ```yaml
         CacheBehaviors:
           - PathPattern: "<PX_APP_ID_SUFFIX>/*"
@@ -75,7 +77,7 @@ See the full official documentation for the Human Security AWS Lambda@Edge Enfor
                 - "PATCH"
                 - "DELETE"
 ```
-* Example: for PX_APP_ID: `pxapp12345` the `PX_APP_ID_SUFFIX` is `app12345` (Remove the PX prefix from the app_id)
+Example:
 ```yaml
         CacheBehaviors:
           - PathPattern: "pxapp12345/*"
@@ -88,11 +90,7 @@ See the full official documentation for the Human Security AWS Lambda@Edge Enfor
                 - "PATCH"
                 - "DELETE"
 ```
- - `HumanLambdaCodeBucket: "<bucket-name>"` 
-```yaml
-    HumanLambdaCodeBucket: "<bucket-name>"
-```
-4. Deploy the CloudFormation stack using the following command (<b>NOTE: replace the placeholders with the relevant values</b>):
+4. Deploy the CloudFormation stack using the following command (<b>NOTE: replace the placeholders with the relevant values - `<stack-name>` and `<bucket-name>` </b>):
     ```bash
     aws cloudformation deploy \                                    
     --stack-name <stack-name> \

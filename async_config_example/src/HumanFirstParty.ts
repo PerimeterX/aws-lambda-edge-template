@@ -17,4 +17,4 @@ export async function handler(
     }
 
     return firstPartyHandler(event,context);
-};
+}

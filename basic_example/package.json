@@ -1,12 +1,12 @@
 {
   "type": "module",
-  "name": "aws-lambda-edge-eonfircer-template",
+  "name": "aws-lambda-edge-enforcer-template",
   "version": "1.0.0",
   "description": "js service for testing enforcers",
   "main": "index.js",
   "scripts": {
     "clean": "rm -rf dist",
-    "build": "esbuild --platform=node --format=cjs --target=es2022 --outdir=dist src/*.ts src/custom/*.ts && npm run build:library",
+    "build": "esbuild --platform=node --format=cjs --target=es2022 --outdir=dist src/*.ts src/custom/*.json && npm run build:library",
     "build:library": "esbuild --platform=node --format=cjs --target=es2022 --outdir=dist/px/ --bundle src/px/humansecurity.ts",
     "zip": "./run-package.sh",
     "prebuild": "npm run clean",

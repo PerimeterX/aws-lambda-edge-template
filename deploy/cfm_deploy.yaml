@@ -63,22 +63,6 @@ Resources:
                   - "logs:PutLogEvents"
                 Resource: "*"
 
-  HumanActivitiesLambda:
-    Type: "AWS::Lambda::Function"
-    Properties:
-      FunctionName: "human-security-activities-lambda"
-      Handler: "index.handler"
-      Role: !GetAtt EnforcerExecutionRole.Arn
-      Runtime: "nodejs20.x"
-      Code:
-        S3Bucket: !Ref HumanLambdaCodeBucket
-        S3Key: !Ref ActivitiesLambdaCodePath
-
-  HumanActivitiesLambdaFunctionVersion:
-    Type: "AWS::Lambda::Version"
-    Properties:
-      FunctionName: !Ref HumanActivitiesLambda
-
   HumanFirstPartyLambda:
     Type: "AWS::Lambda::Function"
     Properties:
@@ -127,8 +111,6 @@ Resources:
             LambdaFunctionAssociations:
               - EventType: "viewer-request"
                 LambdaFunctionARN: !Ref HumanEnforcerLambdaFunctionVersion
-              - EventType: "origin-response"
-                LambdaFunctionARN: !Ref HumanActivitiesLambdaFunctionVersion
         CacheBehaviors:
           - PathPattern: "<PX_APP_ID_SUFFIX>/*"
             AllowedMethods:
@@ -160,10 +142,6 @@ Parameters:
   EnforcerLambdaCodePath:
     Type: String
     Description: "S3 path for the Enforcer Lambda code zip file."
-
-  ActivitiesLambdaCodePath:
-    Type: String
-    Description: "S3 path for the Activities Lambda code zip file."
 
   FirstPartyLambdaCodePath:
     Type: String

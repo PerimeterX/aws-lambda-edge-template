@@ -35,6 +35,9 @@ See the full official documentation for the Human Security AWS Lambda@Edge Enfor
 2. AWS CLI installed and configured.
 3. AWS S3 bucket to store the lambda zip files.
 
+*Note*: The following steps are for deploying the Human Security Enforcer to a new CloudFront distribution.
+The deployment includes the HumanEnforcer lambda and the HumanFirstParty lambda. The HumanActivities lambda is not included in the deployment, to add it, please follow the "How to add HumanActivitiesLambda" instructions at the end of this document, before deploying the CloudFormation stack.
+
 ### Steps:
 1. Store the lambda zip files in the S3 bucket using the following command:
     ```bash
@@ -99,7 +102,62 @@ Example:
     --parameter-overrides \
     HumanLambdaCodeBucket=<bucket-name> \
     EnforcerLambdaCodePath=HumanEnforcer.zip \
-    ActivitiesLambdaCodePath=HumanActivities.zip \
     FirstPartyLambdaCodePath=HumanFirstParty.zip
     ```
 5. After the stack is created, you can find the CloudFront distribution URL in the CloudFormation stack outputs (or in the AWS UI).
+
+## How to add HumanActivitiesLambda
+
+HumanActivitiesLambda is an optional additional lambda, that runs on viewer request and can be used to send additional activities to the Human Security API.
+This Lambda is in charge of generating the Human Security PXHD cookie, and needs to be deployed in case you're using advanced features such as Credential Intelligence or GraphQL protection.
+
+To add the HumanActivitiesLambda to the CloudFormation stack, follow these steps:
+
+Adjust your cfm_deploy.yaml file to include the HumanActivitiesLambda (before deployment):
+
+1. Create the Activities Lambda by adding the following resource to your deployment yaml (after `EnforcerExecutionRole`, at line 65):
+```yaml
+  HumanActivitiesLambda:
+    Type: "AWS::Lambda::Function"
+    Properties:
+      FunctionName: "human-security-activities-lambda"
+      Handler: "index.handler"
+      Role: !GetAtt EnforcerExecutionRole.Arn
+      Runtime: "nodejs20.x"
+      Code:
+        S3Bucket: !Ref HumanLambdaCodeBucket
+        S3Key: !Ref ActivitiesLambdaCodePath
+
+  HumanActivitiesLambdaFunctionVersion:
+    Type: "AWS::Lambda::Version"
+    Properties:
+      FunctionName: !Ref HumanActivitiesLambda
+```
+
+2. Add to `LambdaFunctionAssociations` an `origin-response` EventType, with the following association: LambdaFunctionARN: !Ref HumanActivitiesLambdaFunctionVersion
+Example: 
+```yaml
+            LambdaFunctionAssociations:
+              - EventType: "viewer-request"
+                LambdaFunctionARN: !Ref HumanEnforcerLambdaFunctionVersion
+              - EventType: "origin-response"
+                LambdaFunctionARN: !Ref HumanActivitiesLambdaFunctionVersion
+```
+3. Add the `ActivitiesLambdaCodePath` variable at the end of the yaml file, example:
+```yaml
+    ActivitiesLambdaCodePath:
+    Type: String
+    Description: "S3 path for the Activities Lambda code zip file."
+```
+4. Run the deployment command using the 3 lambdas:
+```bash
+aws cloudformation deploy \                                    
+--stack-name <stack-name> \
+--template-file cfm_deploy.yaml \
+--capabilities CAPABILITY_IAM \
+--parameter-overrides \
+HumanLambdaCodeBucket=<bucket-name> \
+EnforcerLambdaCodePath=HumanEnforcer.zip \
+ActivitiesLambdaCodePath=HumanActivities.zip \
+FirstPartyLambdaCodePath=HumanFirstParty.zip
+```

@@ -1,6 +1,6 @@
 {
   "type": "module",
-  "name": "aws-lambda-edge-eonfircer-template",
+  "name": "aws-lambda-edge-enforcer-template-async-config",
   "version": "1.0.0",
   "description": "js service for testing enforcers",
   "main": "index.js",

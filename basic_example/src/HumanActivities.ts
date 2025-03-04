@@ -1,6 +1,6 @@
-import { CloudFrontResponseEvent, CloudFrontRequestEvent, CloudFrontResponseResult, Context, CloudFrontResponseHandler } from 'aws-lambda';
+import { CloudFrontResponseEvent, CloudFrontResponseResult, Context } from 'aws-lambda';
 import { createHumanActivitiesHandler } from './px/humansecurity';
-import { getConfigAsync } from './custom/config';
+import config from './custom/config.json';
 
 
 // define a handler
@@ -13,7 +13,6 @@ export async function handler(
 ): Promise<CloudFrontResponseResult> {
 
     if (!activitiesHandler){
-        const config = await getConfigAsync();
         activitiesHandler = createHumanActivitiesHandler(config); //(event: CloudFrontResponseEvent, context: Context) => Promise<CloudFrontResponseResult>;
     }
 
